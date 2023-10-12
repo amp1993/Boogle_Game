@@ -1,0 +1,30 @@
+
+body{
+    font-size: 20px;
+
+
+}
+.board{
+    font-size: 35px;
+    display: flex;
+    align-content: center;
+    text-align: center
+}
+
+   
+
+
+.valid{
+    background-color: rgb(52, 161, 52);
+    padding:100 px;
+    font-size: 20px;
+  
+}
+
+.error{
+    background-color: rgb(216, 43, 43);
+    padding:100 px;
+    font-size: 20px;
+    
+
+}
