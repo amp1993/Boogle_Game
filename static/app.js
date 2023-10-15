@@ -1,7 +1,7 @@
 // Set a session flag indicating a new session on page refresh
 
 class BoggleGame{
-constructor(boardId, seconds = 60){
+constructor(boardId, seconds = 5){
     this.board = $('#' + boardId);
     this.seconds = seconds;
     this.words = new Set()
@@ -35,35 +35,39 @@ async handleSubmit(event){
   }
 
   //Check server for validity.
-  async checkValidity(word){
-    try{
+    async checkValidity(word) {
+        if (word.length < 2) {
+            console.log('Word Not Valid')
+        } else {
 
-    const response = await axios.get('/word',{params: {word:word} });
+            try {
+                const response = await axios.get('/word', { params: { word: word } });
 
-    if (response.data.result === "not-word"){
-        this.showMessage(`${word} is not valid.`,'error');
-    } else if (response.data.result === "not-on-board"){
-        this.showMessage(`${word} is not on board.`, 'error');
-    } else {
-    ///Create li and add word
-        this.showMessage(`Added: ${word}`, 'valid');
-        let list = $('<li>').text(word);
-        $('.word-list').append(list);
+                if (response.data.result === "not-word") {
+                    this.showMessage(`${word} is not valid.`, 'error');
+                } else if (response.data.result === "not-on-board") {
+                    this.showMessage(`${word} is not on board.`, 'error');
+                } else {
+                    ///Create li and add word
+                    this.showMessage(`Added: ${word}`, 'valid');
+                    let list = $('<li>').text(word);
+                    $('.word-list').append(list);
 
-    ///Add word to set
-        this.words.add(word)
+                    ///Add word to set
+                    this.words.add(word)
 
-    ///Update score
-        this.score += word.length;
-        $('.score').text('Score:'+ this.score);
+                    ///Update score
+                    this.score += word.length;
+                    $('.score').text('Score:' + this.score);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            const $word = $('.input-value', this.board);
+            $word.val("").focus();
+
+        }
     }
-} catch (error){
-    console.error('Error:', error);
-}
-    const $word = $('.input-value',this.board);
-    $word.val("").focus();
-
-}
 
 ///Timer to reset once secons equals 0.
 async tick(){
@@ -76,8 +80,12 @@ async tick(){
     }
 
 }
+showTimer(){
+    $('.timer', this.board).text('Seconds Left:'+ this.seconds);
+}
 
 async finalScore(){
+    $(".add-word", this.board).hide();
     const response = await axios.post('/post-score',{score: this.score}) ;
     if (response.data.brokeRecord){
         this.showMessage(`New score:${this.score}`, 'valid');
@@ -86,13 +94,6 @@ async finalScore(){
 
     }
 }
-
-
-showTimer(){
-    $('.timer', this.board).text('Seconds Left:'+ this.seconds);
-}
-
-
 }
 
 
