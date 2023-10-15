@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, jsonify, session
-
+# from flask_debugtoolbar import DebugToolbarExtension
 from boggle import Boggle
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "SECRET"
+# app.debug = True
+# toolbar = DebugToolbarExtension(app)
 
 
 boggle_game = Boggle()
@@ -37,14 +39,16 @@ def word_validity():
 def post_score():
     """Fetch score. Update highescore and unm_plays if applicable"""
     
-    score = request.json['score']
+    score = int(request.json['score'])
+
     num_plays = session.get('num_plays',0)
     high_score = session.get('high_score',0)
+   
     
     session['num_plays'] = num_plays + 1
-    session[high_score] = max(score, high_score)
-
-    return jsonify(brokeRecord=score > highscore)
+    session['high_score'] = max(score, high_score)
+    
+    return jsonify(brokeRecord=score > high_score)
     
 
     
